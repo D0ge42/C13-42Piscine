@@ -12,6 +12,7 @@
 
 #include "ft_btree.h"
 #include <stdio.h>
+#include <string.h>
 
 t_btree	*btree_create_node(void *item)
 {
@@ -26,33 +27,34 @@ t_btree	*btree_create_node(void *item)
 	return (new);
 }
 
-void btree_insert_data(t_btree **root, void *item, int(*cmpf)(void *, void *))
+void	btree_insert_data(t_btree **root, void *item,
+		int (*cmpf)(void *, void *))
 {
-	t_btree *newtree;
+	t_btree	*newtree;
 
-	if(root == NULL || item == NULL)
+	if (root == NULL || item == NULL || *root == NULL)
+	{
+		if (root && item)
+			*root = btree_create_node(item);
 		return ;
-	if (*root == NULL) //If *root is empty.
-		*root = btree_create_node(item);
-	return;
+	}
 	newtree = *root;
 	if ((*cmpf)(item, (*root)->item) < 0)
 	{
-		if(newtree->left) 
+		if (newtree->left)
 			btree_insert_data(&newtree->left, item, cmpf);
 		else
-		 newtree->left = btree_create_node(item);
+			newtree->left = btree_create_node(item);
 	}
-	else 
+	else
 	{
-		if(newtree->right)
+		if (newtree->right)
 			btree_insert_data(&newtree->right, item, cmpf);
 		else
-		 newtree->left = btree_create_node(item);	
+			newtree->right = btree_create_node(item);
 	}
 }
-
-void print_tree(t_btree *root)
+/*void print_tree(t_btree *root)
 {
     if (root)
     {
@@ -62,13 +64,36 @@ void print_tree(t_btree *root)
     }
 }
 
+int cmp(void *a, void *b)
+{
+	return strcmp((char *)a, (char *)b);
+}
+
 int main()
 {
 
-	t_btree *tree = btree_create_node("20");
-	tree->left = btree_create_node("30");
-	tree->right = btree_create_node("40");
-	tree->left->left = btree_create_node("50");
+	t_btree *tree = NULL;
+	btree_insert_data(&tree,"2", cmp);
+	btree_insert_data(&tree,"8", cmp);
+	btree_insert_data(&tree,"1", cmp);
+	btree_insert_data(&tree,"4", cmp);
+	btree_insert_data(&tree,"5", cmp);
+	btree_insert_data(&tree,"3", cmp);
+	btree_insert_data(&tree,"3", cmp);
+
 	print_tree(tree);
 	printf("\n");
 }
+
+               2
+		      /	\
+			 1	 8
+			 	  \
+				   4
+				    \
+					 5
+					  \
+					   3
+					    \
+						 3
+*/
