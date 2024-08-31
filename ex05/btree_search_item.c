@@ -11,17 +11,46 @@
 /* ************************************************************************** */
 
 #include "ft_btree.h"
+#include <string.h>
 #include <stdio.h>
 
-void	btree_apply_infix(t_btree *root, void (*applyf)(void *))
+//Why found becomes true when a match is found? It becomes true because the function cmpf(root->item, data,ref ) == 0 is true.
+//Why is function constatly returning found. Its returning found constantly for each call stack remaining.
+//Why do we need return root->item . We need it to return the root->item when found.
+
+void *btree_search_item(t_btree *root, void *data_ref, int(*cmpf)(void *, void *))
 {
-	if (root->left)
-		btree_apply_infix(root->left, applyf);
-	(*applyf)(root->item);
-	if (root->right)
-		btree_apply_infix(root->right, applyf);
+	void *found; 
+
+	if(root == NULL) //Base case
+		return NULL;
+
+	found = btree_search_item(root->left, data_ref, cmpf);
+	if(found)
+		return found;
+
+	if ((*cmpf)(root->item, data_ref) == 0)
+		return root->item;
+
+	return btree_search_item(root->right, data_ref, cmpf);
 }
-/*t_btree	*btree_create_node(void *item)
+
+int cmpf(void *a, void *b)
+{
+	return strcmp((char *)a, (char *)b);
+}
+
+void print_tree(t_btree *root)
+{
+	if(root)
+	{
+		print_tree(root->left);
+		printf("%s ", (char *)root->item);
+		print_tree(root->right);
+	}
+}
+
+t_btree	*btree_create_node(void *item)
 {
 	t_btree	*new;
 
@@ -33,10 +62,12 @@ void	btree_apply_infix(t_btree *root, void (*applyf)(void *))
 	new->right = NULL;
 	return (new);
 }
-void display(void *a)
-{
-	printf("%s ",(char *)a);
-}
+
+//
+//Apply function
+//Print left node backwards 6 5 4 1 
+//Print main node 3
+//Print 2 9
 
 int main()
 {
@@ -48,6 +79,23 @@ int main()
 	new1->left->left->left->left = btree_create_node("6");
 	new1->right->right = btree_create_node("9");
 
-	btree_apply_infix(new1,display);
 
-}*/
+	t_btree *new = btree_search_item(new1,"5",cmpf);
+	if (new != NULL)
+		printf("Found node with value %s\n", (char *)new);
+	else
+	 printf("Node with string %s not found \n", "5");
+
+
+}
+/*
+ 	     3
+	    / \
+       1   2
+      /     \
+     4	     9
+    /
+   5
+  /
+ 6
+*/
