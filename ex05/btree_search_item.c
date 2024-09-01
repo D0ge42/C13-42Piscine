@@ -10,32 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//Q: Why found becomes true when a match is found?
+//A: Because the function cmpf(root->item, data,ref ) == 0 is true.
+//Q: Why is function constatly returning found. 
+//A: Its returning found constantly for each call stack remaining.
+//Q: Why do we need return root->item . 
+//A: We need it to return the root->item when found.
 #include "ft_btree.h"
 #include <string.h>
 #include <stdio.h>
 
-//Why found becomes true when a match is found? It becomes true because the function cmpf(root->item, data,ref ) == 0 is true.
-//Why is function constatly returning found. Its returning found constantly for each call stack remaining.
-//Why do we need return root->item . We need it to return the root->item when found.
-
-void *btree_search_item(t_btree *root, void *data_ref, int(*cmpf)(void *, void *))
+void	*btree_search_item(t_btree *root, void *data_ref,
+						int (*cmpf)(void *, void *))
 {
-	void *found; 
+	void	*found;
 
-	if(root == NULL) //Base case
-		return NULL;
-
+	if (root == NULL)
+		return (NULL);
 	found = btree_search_item(root->left, data_ref, cmpf);
-	if(found)
-		return found;
-
+	if (found)
+		return (found);
 	if ((*cmpf)(root->item, data_ref) == 0)
-		return root->item;
-
-	return btree_search_item(root->right, data_ref, cmpf);
+		return (root->item);
+	return (btree_search_item(root->right, data_ref, cmpf));
 }
-
-int cmpf(void *a, void *b)
+/*int cmpf(void *a, void *b)
 {
 	return strcmp((char *)a, (char *)b);
 }
@@ -62,13 +61,6 @@ t_btree	*btree_create_node(void *item)
 	new->right = NULL;
 	return (new);
 }
-
-//
-//Apply function
-//Print left node backwards 6 5 4 1 
-//Print main node 3
-//Print 2 9
-
 int main()
 {
 	t_btree *new1 = btree_create_node("3");
@@ -88,7 +80,7 @@ int main()
 
 
 }
-/*
+
  	     3
 	    / \
        1   2
