@@ -32,7 +32,6 @@ int	btree_level_count(t_btree *root)
 	else
 		return (0);
 }
-
 /*void print_tree(t_btree *root)
 {
 	if(root)
