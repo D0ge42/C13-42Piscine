@@ -11,13 +11,8 @@
 /* ************************************************************************** */
 
 #include "ft_btree.h"
+#include <ctype.h>
 #include <stdio.h>
-
-//First argument = node's item;
-//Second argument =  level on which we find: 0, for root. || 1 for children || 2 for grand-children etc.
-//Third argument = 1 if first node, 0 otherwise.
-// HOw to browse tree by levels?
-
 
 int tree_height(t_btree *root)
 {
@@ -36,32 +31,41 @@ int tree_height(t_btree *root)
 	}
 }
 
-void print_level(t_btree *root, int clevel)
+void print_tree(void *item, int current_level, int is_first_elem)
 {
-	if(!root)
-		return;
-	if(clevel == 0)
-		printf("%s ",(char *)root->item);
+	printf("Item : %s, current level %d, Is first element %d\n", item, current_level, is_first_elem);
+}
+
+void call(t_btree *root, int current_level, int *levels, void (*applyf)(void *item, int current_level, int is_first_elem))
+{
+	int	is_first_item;
+	if(levels[is_first_item] == 1)
+		is_first_item = 0;
 	else
-	{
-		print_level(root->left, clevel - 1);
-		print_level(root->right, clevel - 1);
-	}
+	 levels[current_level] = 1;
+	applyf(root->left, current_level, is_first_item);
+	if(root->left)
+		call(root->left, current_level + 1, levels, applyf);
+	if(root->right)
+		call(root->right,current_level + 1, levels, applyf);
 }
 
 void btree_apply_by_level(t_btree *root, void (*applyf)(void *item, int current_level, int is_first_elem))
 {
-	//Height of the tree.
-	int tree_h = tree_height(root);
-	//Base case
+	int	count;
+	int *levels;
+	int 	i;
+
 	if(!root)
 		return ;
-	//If it's the first element
-	if(tree_h == 0 )
-		(*applyf)(root->item, 0, 1);
-	else
-	{
-	}
+	count = tree_height(root);
+	levels = (int *)malloc(sizeof(int) * count);
+	if(!levels)
+		return;
+	i = 0;
+	while(i < count)
+		levels[i++] = 0;
+	call(root, 0, levels, applyf);
 }
 
 t_btree	*btree_create_node(void *item)
@@ -85,4 +89,5 @@ int main()
 	new1->left->left->left = btree_create_node("5");
 	new1->left->left->left->left = btree_create_node("6");
 	new1->right->right = btree_create_node("9");
+	btree_apply_by_level(new1, print_tree);
 }
