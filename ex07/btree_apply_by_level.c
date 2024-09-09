@@ -23,47 +23,53 @@ int	max(int a, int b)
 
 int	tree_height(t_btree *root)
 {
-	int depth1;
-	int depth2;
-    if (!root)
-		return 0;
-    else
-    {
+	int	depth1;
+	int	depth2;
+
+	if (!root)
+		return (0);
+	else
+	{
 		depth1 = tree_height(root->left);
 		depth2 = tree_height(root->right);
 		return (max(depth1, depth2) + 1);
-    } 
+	}
 }
 
-void level_by_level(t_btree *root, int clevel,int *levels,
-		    void(*applyf)(void *item, int clevel, int isfirst))
+void	level_by_level(t_btree *root, int clevel, int *levels,
+		void (*applyf)(void *item, int clevel, int isfirst))
 {
-    int	first_item;
+	int	first_item;
 
-    if (root == NULL)
-	return ;
-    if(levels[clevel] == 1)
-	first_item = 0;
-    else
-    {
-	levels[clevel] = 1;
-	first_item = 1;
-    }
+	if (root == NULL)
+		return ;
+	if (levels[clevel] == 1)
+		first_item = 0;
+	else
+	{
+		levels[clevel] = 1;
+		first_item = 1;
+	}
 	(*applyf)(root->item, clevel, first_item);
 	level_by_level(root->left, clevel + 1, levels, applyf);
-	level_by_level(root->right,clevel + 1, levels, applyf);
+	level_by_level(root->right, clevel + 1, levels, applyf);
 }
 
-void	btree_apply_by_level(t_btree *root, void (*applyf)(void *item, int clevel, int isfirst))
+void	btree_apply_by_level(t_btree *root,
+	void (*applyf)(void *item, int clevel, int isfirst))
 {
-    if(root == 0)
-	return;
-    int tree_h = tree_height(root);
-    int *levels = (int *)malloc(sizeof(int) * tree_h);
-    int i = 0;
-    while(i < tree_h)
-	levels[i++] = 0;
-    level_by_level(root, 0, levels, applyf);
+	int	tree_h;
+	int	i;
+	int	*levels;
+
+	if (root == 0)
+		return ;
+	tree_h = tree_height(root);
+	levels = (int *)malloc(sizeof(int) * tree_h);
+	i = 0;
+	while (i < tree_h)
+		levels[i++] = 0;
+	level_by_level(root, 0, levels, applyf);
 }
 /*t_btree	*btree_create_node(void *item)
 {
